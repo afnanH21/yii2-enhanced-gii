@@ -115,30 +115,75 @@ if ($generator->indexWidgetType === 'grid'):
             'type' => GridView::TYPE_PRIMARY,
             'heading' => '<span class="glyphicon glyphicon-book"></span>  ' . Html::encode($this->title),
         ],
-<?php if(!$generator->pdf) : ?>
+        <?php if(!$generator->pdf) : ?>
+        'export' => [
+            'label' => Yii::t('kvgrid','Page'),
+        ],
+        'exportConfig' =>[
+            GridView::CSV => true,
+            GridView::PDF => true,
+            GridView::EXCEL => true,
+        ],
+<?php else : ?>
         'export' => false,
 <?php endif; ?>
         // your toolbar can include the additional full export menu
         'toolbar' => [
             '{export}',
             ExportMenu::widget([
-                'dataProvider' => $dataProvider,
-                'columns' => $gridColumn,
-                'target' => ExportMenu::TARGET_BLANK,
-                'fontAwesome' => true,
-                'dropdownOptions' => [
-                    'label' => 'Full',
-                    'class' => 'btn btn-default',
-                    'itemsBefore' => [
-                        '<li class="dropdown-header">Export All Data</li>',
+            'dataProvider' => $dataProvider,
+            'columns' => $gridColumn,
+            'target' => ExportMenu::TARGET_BLANK,
+            'fontAwesome' => true,
+            'dropdownOptions' => [
+                'label' => Yii::t('kvgrid','Full'),
+                'class' => 'btn btn-default',
+                'itemsBefore' => [
+                    '<li class="dropdown-header">'.Yii::t('kvgrid', 'Export All Data').'</li>',
                     ],
+                'title'=> Yii::t('kvgrid', 'Export All Data')
+            ],
+            'columnBatchToggleSettings'=>[
+                'label'=> Yii::t('kvgrid', 'Select Columns')
+            ],
+            'columnSelectorOptions'=>[
+                'title'=> Yii::t('kvgrid', 'Select Columns To export')
+            ],
+            'messages'=>[
+                'confirmDownload'=>Yii::t('kvgrid','Ok to proceed ?'),
+                'allowPopups'=>Yii::t('kvgrid','Disable any popup blockers in your browser to ensure proper download.'),
+            ],
+            <?php if(!$generator->pdf):?>
+            'exportConfig' => [
+                ExportMenu::FORMAT_HTML => false,
+                ExportMenu::FORMAT_TEXT => false,
+                ExportMenu::FORMAT_EXCEL => false,
+                ExportMenu::FORMAT_CSV => [
+                    'alertMsg' => Yii::t('kvgrid', 'The {fileType} export file will be generated for download.'
+                    ,['fileType'=>'CSV']),
                 ],
-<?php if(!$generator->pdf):?>
-                'exportConfig' => [
-                    ExportMenu::FORMAT_PDF => false
-                ]
-<?php endif;?>
+                ExportMenu::FORMAT_PDF => [
+                    'alertMsg' => Yii::t('kvgrid', 'The {fileType} export file will be generated for download.'
+                    ,['fileType'=>'PDF']),
+                ],
+                ExportMenu::FORMAT_EXCEL_X => [
+                    'alertMsg' => Yii::t('kvgrid', 'The {fileType} export file will be generated for download.'
+                    ,['fileType'=>'EXCEL 2007+ (xlsx)']),
+                ],
+            ]
+        <?php else : ?>
+            'exportConfig' => [
+                ExportMenu::FORMAT_PDF => false
+            ]
+        <?php endif;?>
             ]) ,
+        ],
+        'krajeeDialogSettings' => [
+            'options' => [
+                'title' => Yii::t('common', 'Confirmation Message'),
+                'btnCancelLabel' =>   '<i class="glyphicon glyphicon-ban-circle"></i> ' . Yii::t('common', 'No'),
+                'btnOKLabel' => '<i class="glyphicon glyphicon-ok"></i> ' . Yii::t('common', 'Yes'),
+            ]
         ],
     ]); ?>
 <?php 
